@@ -4,7 +4,7 @@ from config.db_configuration import get_db
 from models.debts import Debt
 from sqlalchemy import func
 
-from Backend.models.user import get_current_user
+from models.user import get_current_user
 
 router = APIRouter()
 
