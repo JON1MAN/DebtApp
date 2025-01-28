@@ -10,7 +10,7 @@ function Dashboard(){
             //For the test
             console.log(token);
             try{
-                const response = await fetch('http://localhost:5000/verifyToken/${token}');
+                const response = await fetch('http://localhost:8000/verifyToken/${token}');
 
                 if(!response.ok){
                     throw new Error('Token is verification failed');
@@ -23,7 +23,7 @@ function Dashboard(){
         verifyToken();
     }, [navigate]);
 
-    return <div>This is a proteted page, visible for authenticated users</div>
+    return <div>This is a protected page, visible for authenticated users</div>
 }
 
 export default Dashboard;

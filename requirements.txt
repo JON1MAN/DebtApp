@@ -9,4 +9,3 @@ passlib
 social-auth-core
 pymysql
 python-dotenv
-#not sure about sociial-auth
