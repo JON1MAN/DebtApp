@@ -4,6 +4,9 @@ import CustomAlert from './CustomAlert';
 
 function Dashboard(){
     const navigate = useNavigate();
+
+    //Const for basic operations like add debt, delete debt, etc.
+    //----------------------------------------------------------
     const [totalDebt, setTotalDebt] = useState(null);
     const [debts, setDebts] = useState([]);
     const [name, setName] = useState('');   // person who is owed
@@ -12,9 +15,20 @@ function Dashboard(){
     const [userId, setUserId] = useState('');   // person who owes us
     const [title, setTitle] = useState('');
     const [debtValue, setDebtValue] = useState('');
+    //----------------------------------------------------------
 
+    //Const for alert message
+    //----------------------------------------------------------
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+    //----------------------------------------------------------
+
+    //Const for calculate debt
+    //----------------------------------------------------------
+    const [numPeople, setNumPeople] = useState(0);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [amounts, setAmounts] = useState([]);
+    //----------------------------------------------------------
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -56,6 +70,8 @@ function Dashboard(){
                 setTotalDebt(Number(sumData.total_debt).toFixed(2));
                 setReceiverId(sumData.user_id);
 
+                //--------------------------------------------------------------------------------
+
                 //Fetch all user debts
                 //--------------------------------------------------------------------------------
 
@@ -84,12 +100,8 @@ function Dashboard(){
         verifyToken();
     }, [navigate]);
 
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/login');
-        window.location.reload();
-    };
-
+    // Delete debt
+    //--------------------------------------------------------------------------------
     const deleteDebt = async (debtId) => {
         const token = localStorage.getItem('token');
         try {
@@ -113,6 +125,10 @@ function Dashboard(){
         }
     };
 
+    //--------------------------------------------------------------------------------
+
+    // Get all users
+    //--------------------------------------------------------------------------------
     const getUsers = async () => {
         const token = localStorage.getItem('token');
         try {
@@ -140,9 +156,14 @@ function Dashboard(){
         getUsers();
     }, []);
 
+    //--------------------------------------------------------------------------------
+    
     const handleSelect = (e) => {
         setUserId(e.target.value);
     };
+
+    // Add debt
+    //--------------------------------------------------------------------------------
 
     const createDebt = async (event) => {
         const token = localStorage.getItem('token');
@@ -178,6 +199,40 @@ function Dashboard(){
         }
     };
 
+    //--------------------------------------------------------------------------------
+
+    // Calculate debt
+    //--------------------------------------------------------------------------------
+    const handleNumPeopleChange = (e) => {
+        const value = parseInt(e.target.value);
+        setNumPeople(value);
+        setSelectedUsers(Array(value).fill(''));
+    };
+
+    const handleUserSelect = (index, value) => {
+        const newSelectedUsers = [...selectedUsers];
+        newSelectedUsers[index] = value;
+        setSelectedUsers(newSelectedUsers);
+    };
+
+    const handleAmountChange = (index, value) => {
+        const newAmounts = [...amounts];
+        newAmounts[index] = value;
+        setAmounts(newAmounts);
+    };
+
+    //--------------------------------------------------------------------------------
+
+    // Logout
+    //--------------------------------------------------------------------------------
+   
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/login');
+        window.location.reload();
+    };
+
+    //--------------------------------------------------------------------------------
 
     return (
         <main className="container">
@@ -230,8 +285,41 @@ function Dashboard(){
                     <button type="submit" style={{width: '30%'}}>Add debt</button>
                 </div>
             </form>
+            <form>
+                <h4>Calculate and add debts:</h4>
+                <div className="grid">
+                    <label htmlFor="money">Money spent:
+                        <input type="number" name="money" placeholder='Money spent' min="0" step="0.01"></input>
+                    </label>
+                    <label htmlFor="people">How many people:
+                        <input type="number" name="people" placeholder='Value' min="0" step="1" 
+                        max={allUsers.length} onChange={handleNumPeopleChange}></input>
+                    </label>
+                </div>
+                <hr></hr>
+                <div className='grid'>
+                {Array.from({ length: numPeople }).map((_, index) => (
+                <div key={index}>
+                    <label htmlFor={`user-${index}`}>User {index + 1}:
+                        <select name={`user-${index}`} onChange={(e) => handleUserSelect(index, e.target.value)} value={selectedUsers[index]}>
+                            <option value="">Choose user</option>
+                            {allUsers.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.username}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <label htmlFor={`amount-${index}`}>Amount spent:
+                        <input type="number" name={`amount-${index}`} placeholder='Amount' min="0" step="0.01" onChange={(e) => handleAmountChange(index, e.target.value)} />
+                    </label>
+                </div>
+                ))}
+                </div>
+                
+            </form>
             <div className="center-button">
-                <button onClick={handleLogout} className='outline'>Logout</button>
+                <button onClick={handleLogout} className='outline' style={{marginBottom:'4em'}}>Logout</button>
             </div>
             {showAlert && <CustomAlert message={alertMessage} onClose={() => setShowAlert(false)} onCloseReload={true}/>}
         </main>
