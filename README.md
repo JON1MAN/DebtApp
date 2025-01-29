@@ -45,6 +45,19 @@ This project is a FastAPI-based backend application that provides APIs for user 
 4. Configure the database:
    Update the `config/db_configuration.py` file with your database connection string.
 
+   It is important for user to create his own .env file in Backend folder in order to
+   correctly connect to database
+
+   f.ex
+
+   ```bash
+   DATABASE_USERNAME=admin
+   DATABASE_PASSWORD=admin
+   DATABASE_NAME=DebtAppDB
+   DATABASE_HOST=ip_address (localhost)
+   DATABASE_PORT=port_to_use
+   ```
+
 5. Run the backend part of application (in Backend directory):
 
    ```bash
