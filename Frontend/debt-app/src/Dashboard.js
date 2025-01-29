@@ -28,6 +28,7 @@ function Dashboard(){
     const [numPeople, setNumPeople] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [amounts, setAmounts] = useState([]);
+    const [moneySpent, setMoneySpent] = useState(0);
     //----------------------------------------------------------
 
     useEffect(() => {
@@ -203,6 +204,7 @@ function Dashboard(){
 
     // Calculate debt
     //--------------------------------------------------------------------------------
+
     const handleNumPeopleChange = (e) => {
         const value = parseInt(e.target.value);
         setNumPeople(value);
@@ -219,6 +221,46 @@ function Dashboard(){
         const newAmounts = [...amounts];
         newAmounts[index] = value;
         setAmounts(newAmounts);
+    };
+
+    const handleMoneySpentChange = (e) => {
+        setMoneySpent(e.target.value);
+    };
+
+    const handleCalculate = async (e) => {
+        e.preventDefault();
+        const payments = selectedUsers.reduce((acc, userId, index) => {
+            if (userId) {
+                acc[userId] = parseFloat(amounts[index]);
+            }
+            return acc;
+        }, {});
+    
+        try {
+            const response = await fetch("http://localhost:8000/split-debts/", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    costs: parseFloat(moneySpent),
+                    payments
+                })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response error');
+            }
+    
+            const data = await response.json();
+            console.log(data);
+            setAlertMessage('Debts calculated and added successfully!');
+            setShowAlert(true);
+        } catch (error) {
+            console.error(error);
+            setAlertMessage('Error calculating debts.');
+            setShowAlert(true);
+        }
     };
 
     //--------------------------------------------------------------------------------
@@ -285,11 +327,12 @@ function Dashboard(){
                     <button type="submit" style={{width: '30%'}}>Add debt</button>
                 </div>
             </form>
-            <form>
+            <form onSubmit={handleCalculate}>
                 <h4>Calculate and add debts:</h4>
                 <div className="grid">
                     <label htmlFor="money">Money spent:
-                        <input type="number" name="money" placeholder='Money spent' min="0" step="0.01"></input>
+                        <input type="number" name="money" placeholder='Money spent' min="0" step="0.01"
+                        onChange={handleMoneySpentChange}></input>
                     </label>
                     <label htmlFor="people">How many people:
                         <input type="number" name="people" placeholder='Value' min="0" step="1" 
@@ -316,7 +359,9 @@ function Dashboard(){
                 </div>
                 ))}
                 </div>
-                
+                <div className="center-button">
+                    <button type="submit" style={{width: '30%'}}>Calculate Debts</button>
+                </div>                
             </form>
             <div className="center-button">
                 <button onClick={handleLogout} className='outline' style={{marginBottom:'4em'}}>Logout</button>
