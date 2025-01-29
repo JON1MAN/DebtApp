@@ -23,11 +23,12 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    username = Column(String(255), unique=True,  index=True, nullable=False)
-    email = Column(String(100), unique=True, index=True)
-    password = Column(String(100))
+    username = Column(String(255), unique=True, index=True, nullable=False)
+    email = Column(String(100), unique=True, index=True, nullable=False)
+    password = Column(String(100), nullable=False)
+
+    # Relationships
     groups = relationship('Group', secondary='user_group_association', back_populates='users')
-    expenses = relationship('Expense', secondary='expense_participants', back_populates='participants')
 
     @staticmethod
     def getUserByUsername(db: Session, username: str):

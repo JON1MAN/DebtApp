@@ -9,6 +9,8 @@ from models.expenses import Expense
 from typing import List, Dict
 
 from models.user_ids import UserIds
+from schemas.debt_response import DebtResponse
+from schemas.debt_split_request import DebtSplitRequest
 
 router = APIRouter()
 
@@ -45,170 +47,73 @@ def add_users_to_group(group_id: int,
     return {"message": "Users added to group", "group": group}
 
 
-@router.post("/groups/{group_id}/expenses", tags=["Expenses"])
-def add_expense(
-    group_id: int,
-    expense_data: ExpenseRequest,  # Use Pydantic model for the request body
-    db: Session = Depends(get_db)
-):
-    """
-    Add a party expense:
-    - Total cost of the party.
-    - List of payers with their contributions.
-    - List of participants who didn't pay.
-    """
-    # Extract data from the request model
-    total_cost = expense_data.total_cost
-    payers = expense_data.payers
-    participants = expense_data.participants
+@router.post("/split-debts/", response_model=List[DebtResponse])
+def split_debts(request: DebtSplitRequest, db: Session = Depends(get_db)):
+    costs = request.costs
+    payments = request.payments
 
-    # Validate group existence
-    group = db.query(Group).filter(Group.id == group_id).first()
-    if not group:
-        raise HTTPException(status_code=404, detail="Group not found.")
+    num_users = len(payments)
+    if num_users == 0:
+        raise HTTPException(status_code=400, detail="No users provided.")
 
-    # Validate payers and participants
-    payer_ids = [payer["user_id"] for payer in payers]
-    all_user_ids = set(payer_ids + participants)
-    users = db.query(User).filter(User.id.in_(all_user_ids)).all()
-    if len(users) != len(all_user_ids):
-        raise HTTPException(status_code=400, detail="Some users are not part of the group.")
+    fair_share = costs / num_users
 
-    # Set payer_id as the first payer in the list (if payers list is not empty)
-    primary_payer_id = payers[0]["user_id"] if payers else None
-    if primary_payer_id is None:
-        raise HTTPException(status_code=400, detail="At least one payer must be specified.")
+    # Compute net balances
+    balances = {}
+    for user_id, paid in payments.items():
+        balances[user_id] = round(paid - fair_share, 2)  # Rounded to 2 decimal places
 
-    # Create the expense entry
-    expense = Expense(amount=total_cost, group_id=group_id, payer_id=primary_payer_id)
-    db.add(expense)
-    db.flush()  # Generate the expense ID for relationships
-
-    # Associate payers and their contributions
-    for payer in payers:
-        payer_user = db.query(User).filter(User.id == payer["user_id"]).first()
-        if not payer_user:
-            raise HTTPException(status_code=400, detail=f"Payer with ID {payer['user_id']} not found.")
-        expense.participants.append(payer_user)  # Add as a participant
-        payer_user.paid_amount = payer.get("amount", 0.0)  # Store amount paid for this party
-
-    # Add participants who haven't paid anything
-    for participant_id in participants:
-        participant = db.query(User).filter(User.id == participant_id).first()
-        if not participant:
-            raise HTTPException(status_code=400, detail=f"Participant with ID {participant_id} not found.")
-        expense.participants.append(participant)
-
-    # Save the changes
-    db.commit()
-    db.refresh(expense)
-    return {"message": "Expense added", "expense": expense}
-
-
-@router.get("/groups/{group_id}/calculate_debts", tags=["Debts"])
-def calculate_debts(group_id: int, db: Session = Depends(get_db)):
-    group = db.query(Group).filter(Group.id == group_id).first()
-    if not group:
-        raise HTTPException(status_code=404, detail="Group not found.")
-
-    # Step 1: Initialize variables
-    participants = {
-        user.id: {"username": user.username, "paid": 0, "share": 0, "net_balance": 0, "remaining_to_party": 0} for user
-        in group.users}
-
-    # Step 2: Distribute total cost among participants
-    total_cost = sum(expense.amount for expense in group.expenses)
-    total_participants = len(participants)
-    if total_participants == 0:
-        raise HTTPException(status_code=400, detail="No participants in the group.")
-
-    share_per_person = total_cost / total_participants
-    for user_id in participants:
-        participants[user_id]["share"] = share_per_person
-
-    # Step 3: Update payments for payers
-    for expense in group.expenses:
-        if expense.payer_id and expense.payer_id in participants:
-            participants[expense.payer_id]["paid"] += expense.amount
-
-    # Step 4: Calculate net balances and remaining amounts
-    total_overpaid = 0
-    total_underpaid = 0
-    debtors = []
+    # Separate into creditors and debtors
     creditors = []
+    debtors = []
 
-    for user_id, data in participants.items():
-        data["net_balance"] = data["paid"] - data["share"]
-        data["remaining_to_party"] = max(0, data["share"] - data["paid"])
-        if data["net_balance"] > 0:
-            creditors.append((user_id, data["net_balance"]))
-            total_overpaid += data["net_balance"]
-        elif data["net_balance"] < 0:
-            debtors.append((user_id, -data["net_balance"]))
-            total_underpaid += -data["net_balance"]
+    for user_id, balance in balances.items():
+        if balance > 0:
+            creditors.append({"user_id": user_id, "balance": balance})
+        elif balance < 0:
+            debtors.append({"user_id": user_id, "balance": -balance})  # Store as positive value
 
-    # Ensure the party user exists in the database
-    party_user = db.query(User).filter(User.username == "party").first()
-    if not party_user:
-        party_user = User(username="party", email="party@example.com", password="securepassword")
-        db.add(party_user)
+    # Sort creditors and debtors
+    creditors.sort(key=lambda x: x["balance"], reverse=True)  # Largest creditor first
+    debtors.sort(key=lambda x: x["balance"], reverse=True)  # Largest debtor first
+
+    debts_response = []
+
+    i = 0  # Index for debtors
+    j = 0  # Index for creditors
+
+    while i < len(debtors) and j < len(creditors):
+        debtor = debtors[i]
+        creditor = creditors[j]
+
+        debt_amount = min(debtor["balance"], creditor["balance"])
+
+        # Create Debt record
+        debt_record = Debt(
+            title=f"Debt from User {debtor['user_id']} to User {creditor['user_id']}",
+            receiver=str(creditor['user_id']),
+            amount=debt_amount,
+            user_id=debtor['user_id']
+        )
+        db.add(debt_record)
         db.commit()
-        db.refresh(party_user)
+        db.refresh(debt_record)
 
-    # Step 5: Determine repayments to overpayers
-    repayments = []
-    for debtor_id, debt in debtors:
-        for creditor_id, credit in creditors:
-            if debt <= 0:
-                break
-            settlement = min(debt, credit)
-            repayments.append({
-                "creditor": participants[creditor_id]["username"],
-                "debtor": participants[debtor_id]["username"],
-                "amount": settlement
-            })
+        # Append to response
+        debts_response.append(DebtResponse(
+            debtor=debtor["user_id"],
+            creditor=creditor["user_id"],
+            amount=debt_amount
+        ))
 
-            # Create debt in the database
-            Debt.createDebt(
-                db=db,
-                title=f"Debt to {participants[creditor_id]['username']}",
-                receiver=participants[creditor_id]["username"],
-                amount=settlement,
-                user_id=debtor_id
-            )
+        # Update balances
+        debtors[i]["balance"] -= debt_amount
+        creditors[j]["balance"] -= debt_amount
 
-            debt -= settlement
-            credit -= settlement
-            creditors = [(c_id, c_credit) for c_id, c_credit in creditors if c_credit > 0]
+        # Move to next debtor or creditor if settled
+        if debtors[i]["balance"] == 0:
+            i += 1
+        if creditors[j]["balance"] == 0:
+            j += 1
 
-    # Step 6: Add debts for remaining party costs
-    for debtor_id, data in participants.items():
-        if data["remaining_to_party"] > 0:
-            repayments.append({
-                "creditor": "party",
-                "debtor": data["username"],
-                "amount": data["remaining_to_party"]
-            })
-
-            # Create debt for the party in the database
-            Debt.createDebt(
-                db=db,
-                title="Debt to party",
-                receiver="party",
-                amount=data["remaining_to_party"],
-                user_id=debtor_id
-            )
-
-    return {
-        "settlements": repayments,
-        "participants": [
-            {
-                "username": data["username"],
-                "paid": data["paid"],
-                "share": data["share"],
-                "net_balance": data["net_balance"],
-                "remaining_to_party": data["remaining_to_party"]
-            }
-            for user_id, data in participants.items()
-        ]
-    }
+    return debts_response

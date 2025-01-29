@@ -1,16 +1,21 @@
-from sqlalchemy import Column, Integer, String, Float
-
+from sqlalchemy.orm import relationship
 from config.db_configuration import Base
 from requests import Session
 
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+
 class Debt(Base):
-    __tablename__='debts'
-    
-    id=Column(Integer, primary_key=True, index=True, autoincrement=True)
-    title=Column(String(100))
-    receiver=Column(String(50))
-    amount=Column(Float)
-    user_id=Column(Integer)
+    __tablename__ = 'debts'
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    title = Column(String(100))
+    receiver_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # Creditor's User ID
+    amount = Column(Float, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # Debtor's User ID
+
+    # Relationships
+    debtor_user = relationship("User", foreign_keys=[user_id], backref="debts_owed")
+    creditor_user = relationship("User", foreign_keys=[receiver_id], backref="debts_owed_to")
 
     def createDebt(db: Session, title: str, receiver: str, amount: float, user_id: int) -> 'Debt':
         """Creates a new debt and saves it to the database."""
