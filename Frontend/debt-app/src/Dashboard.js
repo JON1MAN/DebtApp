@@ -48,7 +48,7 @@ function Dashboard(){
                 }
 
                 const sumData = await sumResponse.json();
-                setTotalDebt(sumData.total_debt);
+                setTotalDebt(Number(sumData.total_debt).toFixed(2));
 
                 //Fetch all user debts
                 //--------------------------------------------------------------------------------
