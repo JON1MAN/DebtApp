@@ -58,13 +58,15 @@ This project is a FastAPI-based backend application that provides APIs for user 
    DATABASE_PORT=port_to_use
    ```
 
-5. Run the backend part of application (in Backend directory):
+5. Run the docker deamon/run XAMPP Apache2 and MYSQL
+
+6. Run the backend part of application (in Backend directory):
 
    ```bash
    uvicorn main:app --reload
    ```
 
-6. Run the frontend part of application (in Frontend/dept-app directory):
+7. Run the frontend part of application (in Frontend/dept-app directory):
 
 ```bash
 npm install
@@ -78,19 +80,51 @@ npm start
 
 ```
 .
-├── main.py                     # Entry point of the application
-├── models                      # Database models
-│   ├── user.py                 # User model and related methods
-│   └── debts.py                # Debt model and related methods
-├── routes                      # API routes
-│   ├── user_routes.py          # Routes for user management
-│   └── debt_routes.py          # Routes for debt management
-├── utils                       # Utility functions
-│   └── auth.py                 # Functions for password hashing and JWT
-├── config                      # Configuration files
-│   └── db_configuration.py     # Database connection setup
-├── requirements.txt            # Python dependencies
-└── README.md                   # Project documentation
+├── Backend
+│   ├── config                      # Configuration files
+│   │   └── db_configuration.py     # Database connection setup
+│   ├── models                      # Database models
+│   │   ├── debts.py                # Debt model and related methods
+│   │   ├── debts_dto.py            # DTO for debts
+│   │   ├── debts_dto_all.py        # DTO for all debts
+│   │   ├── expense_request.py      # Expense request model
+│   │   ├── group.py                # Group model
+│   │   ├── user.py                 # User model and related methods
+│   │   └── user_ids.py             # User IDs model
+│   ├── routes                      # API routes
+│   │   ├── debts_routes.py         # Routes for debt management
+│   │   ├── group_routes.py         # Routes for group management
+│   │   └── user_routes.py          # Routes for user management
+│   ├── schemas                     # Pydantic schemas
+│   │   ├── __init__.py             # Base schema and paginated schema
+│   │   ├── debt_response.py        # Debt response schema
+│   │   ├── debt_split_request.py   # Debt split request schema
+│   │   └── user_schema.py          # User schemas
+│   ├── services                    # Service layer
+│   │   └── user_service.py         # User service methods
+│   ├── utils                       # Utility functions
+│   │   └── auth.py                 # Functions for password hashing and JWT
+│   ├── docker-compose.yml          # Docker Compose configuration
+│   ├── main.py                     # Entry point of the application
+│   └── test_main.http              # HTTP tests for FastAPI endpoints
+├── Frontend
+│   └── debt-app                    # React application
+│       ├── src
+│       │   ├── App.css
+│       │   ├── App.js
+│       │   ├── App.test.js
+│       │   ├── CustomAlert.css
+│       │   ├── CustomAlert.js
+│       │   ├── Dashboard.js
+│       │   ├── index.css
+│       │   ├── index.js
+│       │   ├── Login.js
+│       │   ├── Register.js
+│       │   └── reportWebVitals.js
+|       └──
+├── .gitignore
+├── README.md
+└── requirements.txt
 ```
 
 ## API Endpoints
