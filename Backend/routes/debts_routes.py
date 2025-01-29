@@ -18,8 +18,9 @@ class DebtCreateRequest(BaseModel):
 
 @router.get("/debts", tags=["Debts"])
 def get_all_debts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    debts = User.getAllUserDebts(db)
-    return {"debts": debts}
+    user_id = current_user.id
+    user_debts = db.query(Debt).filter(Debt.user_id == user_id).all()
+    return {"debts": user_debts}
 
 @router.post("/debts", tags=["Debts"])
 def create_debt(request: DebtCreateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
