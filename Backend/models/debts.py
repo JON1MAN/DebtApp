@@ -9,6 +9,7 @@ class Debt(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     title = Column(String(100))
+    receiver = Column(String(100))
     receiver_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # Creditor's User ID
     amount = Column(Float, nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # Debtor's User ID
