@@ -55,6 +55,14 @@ def split_debts(request: DebtSplitRequest, db: Session = Depends(get_db)):
     if num_users == 0:
         raise HTTPException(status_code=400, detail="No users provided.")
 
+    total_payments = sum(payments.values())
+
+    if total_payments != costs:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Sum of payments ({total_payments}) must be equal to total costs ({costs})."
+        )
+
     fair_share = costs / num_users
 
     # Compute net balances
