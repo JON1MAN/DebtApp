@@ -70,6 +70,7 @@ This project is a FastAPI-based backend application that provides APIs for user 
 npm install
 npm update
 (optional) npm audit fix --force
+npm install @picocss/pico
 npm start
 ```
 

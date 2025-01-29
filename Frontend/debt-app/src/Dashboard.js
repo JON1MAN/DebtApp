@@ -172,7 +172,7 @@ function Dashboard(){
 
 
     return (
-        <main>
+        <main className="container-fluid">
             <h2>Welcome {name}</h2>
             <h3>Your debt is: {totalDebt} zł</h3>
             <section>
