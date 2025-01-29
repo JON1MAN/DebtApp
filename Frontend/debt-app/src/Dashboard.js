@@ -107,6 +107,70 @@ function Dashboard(){
         }
     };
 
+    const getUsers = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const usersResponse = await fetch(`http://localhost:8000/users/usernames`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (!usersResponse.ok) {
+                throw new Error("Failed to get all users!");
+            }
+
+            const usersData = await usersResponse.json();
+            setUsers(usersData.users)
+
+        } catch (error) {
+            console.log("Error getting users:", error)
+        }
+    };
+
+    useEffect(() => {
+        getUsers();
+    }, []);
+
+    const handleSelect = (e) => {
+        setUserId(e.target.value);
+    };
+
+    const createDebt = async (event) => {
+        const token = localStorage.getItem('token');
+        event.preventDefault();
+
+        const formDetails = {
+            title,
+            receiver: name,
+            amount: parseFloat(debtValue),
+            user_id: parseInt(userId)
+        }
+
+        try {
+            const response = await fetch("http://localhost:8000/debts", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(formDetails)
+            });
+
+            if (response.ok) {
+                alert("Debt added succesfully!");
+            }
+            else {
+                throw new Error("Failed to add debt!");
+            }
+        } catch (error) {
+            console.error("Error while adding debt", error)
+        }
+    };
+
+
     return (
         <main>
             <h2>Welcome {name}</h2>
@@ -126,6 +190,25 @@ function Dashboard(){
                     </ul>
                 )}
             </section>
+            <form onSubmit={createDebt}>
+                <h4>Add new receipt here</h4>
+                <label htmlFor="title">Title:</label>
+                <input type="text" name="title" placeholder="Title"
+                    onChange={(e) => setTitle(e.target.value)}></input>
+                <label htmlFor="value">Value:</label>
+                <input type="number" name="value" min="0" step="0.01"
+                    onChange={(e) => setDebtValue(e.target.value)}></input>
+                <label htmlFor="receiver">Borrower:</label>
+                <select name="receiver" onChange={handleSelect} value={userId}>
+                    <option value="">Choose debtor</option>
+                    {allUsers.map((user) => (
+                        <option key={user.id} value={user.id}>
+                            {user.username}
+                        </option>
+                    ))}
+                </select>
+                <button type="submit">Add debt</button>
+            </form>
             <button onClick={handleLogout}>Logout</button>
         </main>
     )

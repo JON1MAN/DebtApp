@@ -3,10 +3,16 @@ from sqlalchemy.orm import Session
 from config.db_configuration import get_db
 from models.debts import Debt
 from sqlalchemy import func
-
+from pydantic import BaseModel
 from models.user import get_current_user, User
 
 router = APIRouter()
+
+class DebtCreateRequest(BaseModel):
+    title: str
+    receiver: str
+    amount: float
+    user_id: int
 
 @router.get("/debts", tags=["Debts"])
 def get_all_debts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -14,8 +20,8 @@ def get_all_debts(db: Session = Depends(get_db), current_user: User = Depends(ge
     return {"debts": debts}
 
 @router.post("/debts", tags=["Debts"])
-def create_debt(title: str, receiver: str, amount: float, user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    new_debt = Debt(title=title, receiver=current_user.username, amount=amount, user_id=user_id)
+def create_debt(request: DebtCreateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    new_debt = Debt(title=request.title, receiver=request.receiver, amount=request.amount, user_id=request.user_id)
     db.add(new_debt)
     db.commit()
     db.refresh(new_debt)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from utils.auth import create_access_token, verify_token
 from config.db_configuration import get_db
-from models.user import User
+from models.user import get_current_user, User
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -35,3 +35,9 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
 def verify_token_endpoint(token: str):
     verify_token(token)
     return {"message": "Token is valid"}
+
+@router.get("/users/usernames", tags=["Users"])
+def get_all_usernames(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    users = db.query(User).all()
+    user_data = [{"id": user.id, "username": user.username} for user in users]
+    return {"users": user_data}
