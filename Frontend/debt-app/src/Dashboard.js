@@ -6,9 +6,10 @@ function Dashboard(){
     const navigate = useNavigate();
     const [totalDebt, setTotalDebt] = useState(null);
     const [debts, setDebts] = useState([]);
-    const [name, setName] = useState('');
+    const [name, setName] = useState('');   // person who is owed
+    const [receiverId, setReceiverId] = useState('');   // person who owes us
     const [allUsers, setUsers] = useState([]);
-    const [userId, setUserId] = useState('');
+    const [userId, setUserId] = useState('');   // person who owes us
     const [title, setTitle] = useState('');
     const [debtValue, setDebtValue] = useState('');
 
@@ -53,6 +54,7 @@ function Dashboard(){
 
                 const sumData = await sumResponse.json();
                 setTotalDebt(Number(sumData.total_debt).toFixed(2));
+                setReceiverId(sumData.user_id);
 
                 //Fetch all user debts
                 //--------------------------------------------------------------------------------
@@ -149,6 +151,7 @@ function Dashboard(){
         const formDetails = {
             title,
             receiver: name,
+            receiver_id: parseInt(receiverId),
             amount: parseFloat(debtValue),
             user_id: parseInt(userId)
         }
@@ -185,7 +188,7 @@ function Dashboard(){
             <section>
                 <h4>Your debts:</h4>
                 {debts.length === 0 ? (
-                    <p>You have no debts.</p>  // If no debts, show a message
+                    <p><ins>You have no debts.</ins></p>  // If no debts, show a message
                 ) : (
                     <ul>
                         {debts.map((debt) => (
@@ -193,7 +196,7 @@ function Dashboard(){
                             <li key={debt.id} className='paddings'>
                                 <div style={{display:'flex'}}>
                                     <p style={{width: '90%'}}><strong>"{debt.title}"</strong> requested by: 
-                                    <b style={{color: '#ff9500'}}>{debt.receiver}</b> — <u>{debt.amount}</u> zł</p>
+                                    <b style={{color: '#ff9500'}}> {debt.receiver}</b> — <u>{debt.amount}</u> zł</p>
                                     <button style={{width: '10%'}} onClick={() => deleteDebt(debt.id)}>Paid</button>
                                 </div>
                             </li>
@@ -202,7 +205,7 @@ function Dashboard(){
                 )}
             </section>
             <form onSubmit={createDebt}>
-                <h4>Add new receipt here</h4>
+                <h4>Add new receipt here:</h4>
                     <div className='grid'>
                     <label htmlFor="title">Title:
                         <input type="text" name="title" placeholder="Debt description" 
