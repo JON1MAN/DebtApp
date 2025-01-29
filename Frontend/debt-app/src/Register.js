@@ -58,6 +58,7 @@ function Register() {
     return (
         <div>
             <h2>Register new user</h2>
+            <h4>Already registered?<button onClick={() => navigate('/login')}>Login</button></h4>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>
