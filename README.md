@@ -1,8 +1,8 @@
-# FastAPI Project
+# FastAPI & React DebtApp Project
 
 ## Overview
 
-This project is a FastAPI-based backend application that provides APIs for user management and debt tracking. It includes JWT-based authentication and supports CRUD operations for managing users and debts.
+This project is a FastAPI & React -based application that provides APIs for user management and debt tracking. It includes JWT-based authentication and supports CRUD operations for managing users and debts.
 
 ## Features
 
@@ -13,12 +13,15 @@ This project is a FastAPI-based backend application that provides APIs for user 
 - **Debt Management**
   - Add, retrieve, and delete debts
   - Calculate total debts per user
+- **Group Managment**
+  - Calculate and split-up debts automatically
 
 ## Prerequisites
 
 - Python 3.9+
 - A relational database (MySQL)
 - XAMPP or Docker to connect to database website (PHPMyAdmin or other)
+- Node.js for frontend part
 
 ## Installation
 
@@ -58,7 +61,9 @@ This project is a FastAPI-based backend application that provides APIs for user 
    DATABASE_PORT=port_to_use
    ```
 
-5. Run the docker deamon/run XAMPP Apache2 and MYSQL
+   When using XAMPP it is also important to create databse with name included in DATABASE_NAME
+
+5. Run the docker deamon/Run XAMPP Apache2 and MYSQL
 
 6. Run the backend part of application (in Backend directory):
 
