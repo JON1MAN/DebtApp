@@ -11,11 +11,16 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class RegisterRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
 @router.post("/register", tags=["Users"])
-def register_user(username: str, email: str, password: str, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == email).first():
+def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == request.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-    user = User.create_user(db, username, email, password)
+    user = User.create_user(db, request.username, request.email, request.password)
     return {"message": "User registered", "user": user.username}
 
 @router.post("/login", tags=["Users"])

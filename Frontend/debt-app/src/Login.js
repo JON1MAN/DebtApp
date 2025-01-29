@@ -45,6 +45,7 @@ function Login() {
             if(response.ok){
                 const data = await response.json();
                 localStorage.setItem('token', data.access_token);
+                localStorage.setItem('username', username);
                 navigate('/dashboard');
             } else{
                 const errorData = await response.json();
