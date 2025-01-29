@@ -12,6 +12,7 @@ router = APIRouter()
 class DebtCreateRequest(BaseModel):
     title: str
     receiver: str
+    receiver_id: int
     amount: float
     user_id: int
 
@@ -22,7 +23,7 @@ def get_all_debts(db: Session = Depends(get_db), current_user: User = Depends(ge
 
 @router.post("/debts", tags=["Debts"])
 def create_debt(request: DebtCreateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    new_debt = Debt(title=request.title, receiver=request.receiver, amount=request.amount, user_id=request.user_id)
+    new_debt = Debt(title=request.title, receiver=request.receiver, amount=request.amount, user_id=request.user_id, receiver_id=request.receiver_id)
     db.add(new_debt)
     db.commit()
     db.refresh(new_debt)
