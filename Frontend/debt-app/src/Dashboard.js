@@ -192,7 +192,8 @@ function Dashboard(){
                             
                             <li key={debt.id} className='paddings'>
                                 <div style={{display:'flex'}}>
-                                    <p style={{width: '90%'}}><strong>"{debt.title}"</strong> requested by: <b style={{color: '#ff9500'}}>{debt.receiver}</b> — <u>{debt.amount}</u> zł</p>
+                                    <p style={{width: '90%'}}><strong>"{debt.title}"</strong> requested by: 
+                                    <b style={{color: '#ff9500'}}>{debt.receiver}</b> — <u>{debt.amount}</u> zł</p>
                                     <button style={{width: '10%'}} onClick={() => deleteDebt(debt.id)}>Paid</button>
                                 </div>
                             </li>
