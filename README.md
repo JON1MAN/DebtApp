@@ -186,6 +186,7 @@ npm start
     {
       "title": "string",
       "receiver": "string",
+      "receiver_id": "int",
       "amount": "float",
       "user_id": "int"
     }
@@ -198,6 +199,7 @@ npm start
         "id": "int",
         "title": "string",
         "receiver": "string",
+        "receiver_id": "int",
         "amount": "float",
         "user_id": "int"
       }
