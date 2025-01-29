@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 
 from config.db_configuration import Base
 from models.debts import Debt
-from models.group import user_group_association
 from utils.auth import hash_password, verify_password
 
 
@@ -16,8 +15,6 @@ from utils.auth import decode_access_token
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-from models.expenses import expense_participants
 
 class User(Base):
     __tablename__ = "users"
