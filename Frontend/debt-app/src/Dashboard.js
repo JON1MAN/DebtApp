@@ -293,8 +293,8 @@ function Dashboard(){
                             <li key={debt.id} className='paddings'>
                                 <div style={{display:'flex'}}>
                                     <p style={{width: '90%'}}><strong>"{debt.title}"</strong> requested by: 
-                                    <b style={{color: '#ff9500'}}> {debt.receiver}</b> — <u>{debt.amount}</u> zł</p>
-                                    <button style={{width: '10%'}} onClick={() => deleteDebt(debt.id)}>Paid</button>
+                                    <b style={{color: '#ff9500'}}> {debt.receiver}</b> — <u>{debt.amount} zł</u></p>
+                                    <button style={{width: '10%'}} onClick={() => deleteDebt(debt.id)}>Paid &#10003;</button>
                                 </div>
                             </li>
                         ))}
@@ -324,13 +324,13 @@ function Dashboard(){
                     </label>
                 </div>
                 <div className="center-button">
-                    <button type="submit" style={{width: '30%'}}>Add debt</button>
+                    <button type="submit" style={{width: '30%'}}>Add Debt</button>
                 </div>
             </form>
 
             <form onSubmit={handleCalculate}>
                 <h4>Calculate and split debts:</h4>
-                <ins>Remember, money spent have to be the same as sum of amounts users spent</ins>
+                <ins>Remember, money spent have to be equal as sum of amounts users spent</ins>
                 <div className="grid" style={{marginTop:'1em'}}>
                     <label htmlFor="money">Money spent:
                         <input type="number" name="money" placeholder='Money spent' min="0" step="0.01"
