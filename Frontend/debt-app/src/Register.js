@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CustomAlert from './CustomAlert';
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -7,6 +8,9 @@ function Register() {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const navigate = useNavigate();
 
@@ -43,8 +47,9 @@ function Register() {
             setLoading(false);
 
             if (response.ok) {
-                alert("Succesfuly Registered!");
-                navigate('/login');
+                setAlertMessage("User registered successfully!");
+                setShowAlert(true);
+                
             } else {
                 const errorData = await response.json();
                 setError(errorData.detail);
@@ -92,6 +97,7 @@ function Register() {
                 <h4 style={{width:'100%'}} className='center-text'>Already registered?</h4>
                 <button className='outline' onClick={() => navigate('/login')}>Login</button>
             </footer>
+            {showAlert && <CustomAlert message={alertMessage} onClose={() => { setShowAlert(false); navigate('/login'); }} />}
         </div>
     );
 
