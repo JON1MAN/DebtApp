@@ -98,6 +98,7 @@ def split_debts(request: DebtSplitRequest, db: Session = Depends(get_db)):
         # Create Debt record
         debt_record = Debt(
             title=f"Debt from User {debtor['user_id']} to User {creditor['user_id']}",
+            receiver=User.getUsernameById(db, creditor['user_id']),
             receiver_id=creditor['user_id'],
             amount=debt_amount,
             user_id=debtor['user_id']

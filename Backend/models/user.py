@@ -32,6 +32,15 @@ class User(Base):
         return db.query(User).filter(User.username == username).first()
 
     @staticmethod
+    def getUsernameById(db: Session, user_id: int):
+        user = User.getUserById(db, user_id)
+        return user.username
+
+    @staticmethod
+    def getUserById(db: Session, user_id: int):
+        return db.query(User).filter(User.id == user_id).first()
+
+    @staticmethod
     def getAllUsernames(db: Session):
         return [user.username for user in db.query(User).all()]
 
