@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Register from "./Register";
-import '@picocss/pico/css/pico.min.css';
+import '@picocss/pico/css/pico.pumpkin.min.css';
+import './App.css';
 
 function App() {
 

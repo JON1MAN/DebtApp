@@ -58,7 +58,7 @@ function Login() {
     };
 
     return (
-        <div>
+        <div className="container">
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>

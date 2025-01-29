@@ -161,6 +161,7 @@ function Dashboard(){
 
             if (response.ok) {
                 alert("Debt added succesfully!");
+                window.location.reload();
             }
             else {
                 throw new Error("Failed to add debt!");
@@ -172,9 +173,9 @@ function Dashboard(){
 
 
     return (
-        <main className="container-fluid">
-            <h2>Welcome {name}</h2>
-            <h3>Your debt is: {totalDebt} zł</h3>
+        <main className="container">
+            <h1 className="center-text paddings">Welcome: {name}</h1>
+            <h3 className="center-text paddings">Your debt is: <u>{totalDebt} zł</u></h3>
             <section>
                 <h4>Your debts:</h4>
                 {debts.length === 0 ? (
@@ -182,9 +183,12 @@ function Dashboard(){
                 ) : (
                     <ul>
                         {debts.map((debt) => (
-                            <li key={debt.id}>
-                                <strong>{debt.title}</strong> to {debt.receiver} — {debt.amount} zł
-                                <button onClick={() => deleteDebt(debt.id)}>Paid</button>
+                            
+                            <li key={debt.id} className='paddings'>
+                                <div style={{display:'flex'}}>
+                                    <p style={{width: '90%'}}><strong>{debt.title}</strong> to {debt.receiver} — {debt.amount} zł</p>
+                                    <button style={{width: '10%'}} onClick={() => deleteDebt(debt.id)}>Paid</button>
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -192,24 +196,33 @@ function Dashboard(){
             </section>
             <form onSubmit={createDebt}>
                 <h4>Add new receipt here</h4>
-                <label htmlFor="title">Title:</label>
-                <input type="text" name="title" placeholder="Title"
-                    onChange={(e) => setTitle(e.target.value)}></input>
-                <label htmlFor="value">Value:</label>
-                <input type="number" name="value" min="0" step="0.01"
-                    onChange={(e) => setDebtValue(e.target.value)}></input>
-                <label htmlFor="receiver">Borrower:</label>
-                <select name="receiver" onChange={handleSelect} value={userId}>
-                    <option value="">Choose debtor</option>
-                    {allUsers.map((user) => (
-                        <option key={user.id} value={user.id}>
-                            {user.username}
-                        </option>
-                    ))}
-                </select>
-                <button type="submit">Add debt</button>
+                    <div className='grid'>
+                    <label htmlFor="title">Title:
+                        <input type="text" name="title" placeholder="Title" 
+                            onChange={(e) => setTitle(e.target.value)}></input>
+                    </label>
+                    <label htmlFor="value">Value:
+                        <input type="number" placeholder="Value" name="value" min="0" step="0.01"
+                            onChange={(e) => setDebtValue(e.target.value)}></input>
+                    </label>
+                    <label htmlFor="receiver">Borrower:
+                        <select name="receiver" onChange={handleSelect} value={userId}>
+                            <option value="">Choose debtor</option>
+                            {allUsers.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.username}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+                <div className="center-button">
+                    <button type="submit" style={{width: '30%'}}>Add debt</button>
+                </div>
             </form>
-            <button onClick={handleLogout}>Logout</button>
+            <div className="center-button">
+                <button onClick={handleLogout} className='contrast'>Logout</button>
+            </div>
         </main>
     )
 }
