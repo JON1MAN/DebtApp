@@ -10,7 +10,7 @@ function Dashboard(){
             //For the test
             console.log(token);
             try{
-                const response = await fetch('http://localhost:8000/verifyToken/${token}');
+                const response = await fetch(`http://localhost:8000/verifyToken/${token}`);
 
                 if(!response.ok){
                     throw new Error('Token is verification failed');

@@ -3,6 +3,7 @@ from typing import Optional
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from fastapi import HTTPException, status
 
 SECRET_KEY = "your_secret_key_here"
 ALGORITHM = "HS256"
@@ -28,3 +29,9 @@ def decode_access_token(token: str):
         return payload
     except JWTError:
         return None
+
+def verify_token(token: str):
+    payload = decode_access_token(token)
+    if payload is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    return payload

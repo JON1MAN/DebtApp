@@ -26,17 +26,18 @@ function Login() {
         }
         setLoading(true);
 
-        const formDetails = new URLSearchParams();
-        formDetails.append('username', username);
-        formDetails.append('password', password);
+        const formDetails = {
+            username: username,
+            password: password
+        };
 
         try{
             const response = await fetch('http://localhost:8000/login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: formDetails,
+                body: JSON.stringify(formDetails),
             });
 
             setLoading(false);
@@ -77,7 +78,7 @@ function Login() {
                 <button type="submit" disabled={loading}>
                     {loading ? 'Logging in...' : 'Login'}
                 </button>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {error && <p style={{ color: 'red' }}>{typeof error === 'string' ? error : JSON.stringify(error)}</p>}
             </form>
         </div>
     );
