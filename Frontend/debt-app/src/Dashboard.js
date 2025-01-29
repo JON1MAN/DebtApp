@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {useNavigate} from 'react-router-dom';
+import CustomAlert from './CustomAlert';
 
 function Dashboard(){
     const navigate = useNavigate();
@@ -10,6 +11,9 @@ function Dashboard(){
     const [userId, setUserId] = useState('');
     const [title, setTitle] = useState('');
     const [debtValue, setDebtValue] = useState('');
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -100,8 +104,8 @@ function Dashboard(){
             }
 
             setDebts(debts.filter(debt => debt.id !== debtId));
-            alert("Debt paid succesfully!")
-            window.location.reload();
+            setAlertMessage("Debt paid successfully!");
+            setShowAlert(true);
         } catch (error) {
             console.log("Error deleteing debt:", error)
         }
@@ -160,8 +164,8 @@ function Dashboard(){
             });
 
             if (response.ok) {
-                alert("Debt added succesfully!");
-                window.location.reload();
+                setAlertMessage("Debt added successfully!");
+                setShowAlert(true);
             }
             else {
                 throw new Error("Failed to add debt!");
@@ -225,6 +229,7 @@ function Dashboard(){
             <div className="center-button">
                 <button onClick={handleLogout} className='outline'>Logout</button>
             </div>
+            {showAlert && <CustomAlert message={alertMessage} onClose={() => setShowAlert(false)} onCloseReload={true}/>}
         </main>
     )
 }
