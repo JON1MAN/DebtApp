@@ -5,6 +5,7 @@ from models.debts import Debt
 from sqlalchemy import func
 from pydantic import BaseModel
 from models.user import get_current_user, User
+from schemas.debts_summary import DebtSummary
 
 router = APIRouter()
 
@@ -40,5 +41,8 @@ def delete_debt(debt_id: int, db: Session = Depends(get_db), current_user: User 
 def get_sum_of_my_debts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user_id = current_user.id
     total_debt = current_user.getSumOfUserDebts(db)
-    return {"total_debt": total_debt or 0.0}  # Zwraca 0.0, jeśli nie ma długów
+    return DebtSummary(
+        user_id=user_id,
+        total_debt=total_debt or 0.0
+    )
 
