@@ -57,8 +57,7 @@ function Register() {
 
     return (
         <div className="container">
-            <h2>Register new user</h2>
-            <h4>Already registered?<button onClick={() => navigate('/login')}>Login</button></h4>
+            <h2 className='center-text paddings'>Register new user</h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>
@@ -84,11 +83,15 @@ function Register() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <button type="submit" disabled={loading}>
+                <button type="submit" disabled={loading} style={{marginTop:'1em'}}>
                     {loading ? 'Registering...' : 'Register'}
                 </button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
             </form>
+            <footer className="center-button">
+                <h4 style={{width:'100%'}} className='center-text'>Already registered?</h4>
+                <button className='outline' onClick={() => navigate('/login')}>Login</button>
+            </footer>
         </div>
     );
 

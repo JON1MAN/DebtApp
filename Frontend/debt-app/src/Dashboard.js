@@ -174,8 +174,10 @@ function Dashboard(){
 
     return (
         <main className="container">
-            <h1 className="center-text paddings">Welcome: {name}</h1>
-            <h3 className="center-text paddings">Your debt is: <u>{totalDebt} zł</u></h3>
+            <h1 className="center-text paddings" >Welcome: 
+                <span className='color-change'> {name}</span>
+            </h1>
+            <h3 className="center-text paddings">Your debt is: <u style={{color: '#ff9500'}}>{totalDebt} zł</u></h3>
             <section>
                 <h4>Your debts:</h4>
                 {debts.length === 0 ? (
@@ -186,7 +188,7 @@ function Dashboard(){
                             
                             <li key={debt.id} className='paddings'>
                                 <div style={{display:'flex'}}>
-                                    <p style={{width: '90%'}}><strong>{debt.title}</strong> to {debt.receiver} — {debt.amount} zł</p>
+                                    <p style={{width: '90%'}}><strong>"{debt.title}"</strong> requested by: <b style={{color: '#ff9500'}}>{debt.receiver}</b> — <u>{debt.amount}</u> zł</p>
                                     <button style={{width: '10%'}} onClick={() => deleteDebt(debt.id)}>Paid</button>
                                 </div>
                             </li>
@@ -198,7 +200,7 @@ function Dashboard(){
                 <h4>Add new receipt here</h4>
                     <div className='grid'>
                     <label htmlFor="title">Title:
-                        <input type="text" name="title" placeholder="Title" 
+                        <input type="text" name="title" placeholder="Debt description" 
                             onChange={(e) => setTitle(e.target.value)}></input>
                     </label>
                     <label htmlFor="value">Value:
@@ -221,7 +223,7 @@ function Dashboard(){
                 </div>
             </form>
             <div className="center-button">
-                <button onClick={handleLogout} className='contrast'>Logout</button>
+                <button onClick={handleLogout} className='outline'>Logout</button>
             </div>
         </main>
     )

@@ -53,4 +53,53 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+@keyframes colorChange {
+  0% { color: #ff9500; }
+  5% { color: #ff9a00; }
+  10% { color: #ffbf00; }
+  15% { color: #ffc700; }
+  20% { color: #ffdf00; }
+  25% { color: #ffe700; }
+  30% { color: #ffff00; }
+  35% { color: #ffe700; }
+  40% { color: #ffdf00; }
+  45% { color: #ffc700; }
+  50% { color: #ffbf00; }
+  55% { color: #ff9a00; }
+  60% { color: #ff9500; }
+  65% { color: #ff7200; }
+  70% { color: #ff1f00; }
+  75% { color: #ff2f00; }
+  80% { color: #ff3f00; }
+  85% { color: #ff4f00; }
+  90% { color: #ff5f00; }
+  95% { color: #ff6f00; }
+  100% { color: #ff7200; }
+  105% { color: #ff7f00; }
+  110% { color: #ff8c00; }
+  115% { color: #ff9500; }
+  120% { color: #ffbf00; }
+  125% { color: #ffdf00; }
+  130% { color: #ffff00; }
+  135% { color: #ffdf00; }
+  140% { color: #ffbf00; }
+  145% { color: #ff9500; }
+  150% { color: #ff1f00; }
+  155% { color: #ff2f00; }
+  160% { color: #ff3f00; }
+  165% { color: #ff4f00; }
+  170% { color: #ff5f00; }
+  175% { color: #ff6f00; }
+  180% { color: #ff7200; }
+  185% { color: #ff7f00; }
+  190% { color: #ff8c00; }
+  195% { color: #ff9500; }
+  200% { color: #ffbf00; }
+}
+
+.color-change {
+  animation: colorChange 5s infinite;
 }

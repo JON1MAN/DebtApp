@@ -59,6 +59,9 @@ function Login() {
 
     return (
         <div className="container">
+            <h2 className='center-text paddings'>Welcome in 
+                <span className="color-change"> DebtApp</span>
+            </h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>
@@ -81,6 +84,10 @@ function Login() {
                 </button>
                 {error && <p style={{ color: 'red' }}>{typeof error === 'string' ? error : JSON.stringify(error)}</p>}
             </form>
+            <footer className="center-button">
+                <h4 style={{width:'100%'}} className='center-text'>Sign up!</h4>
+                <button className='outline' onClick={() => navigate('/')}>Register</button>
+            </footer>
         </div>
     );
 
