@@ -42,7 +42,9 @@ def delete_debt(debt_id: int, db: Session = Depends(get_db), current_user: User 
 @router.get("/my_debts/sum", tags=["Debts"])  # Nowa trasa do sumowania długów
 def get_sum_of_my_debts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user_id = current_user.id
-    total_debt = current_user.getSumOfUserDebts(db)
+    user_debts = db.query(Debt).filter(Debt.user_id == user_id).all()
+    total_debt = sum(debt.amount for debt in user_debts)
+
     return DebtSummary(
         user_id=user_id,
         total_debt=total_debt or 0.0
