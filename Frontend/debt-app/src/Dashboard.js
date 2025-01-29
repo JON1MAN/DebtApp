@@ -327,9 +327,11 @@ function Dashboard(){
                     <button type="submit" style={{width: '30%'}}>Add debt</button>
                 </div>
             </form>
+
             <form onSubmit={handleCalculate}>
-                <h4>Calculate and add debts:</h4>
-                <div className="grid">
+                <h4>Calculate and split debts:</h4>
+                <ins>Remember, money spent have to be the same as sum of amounts users spent</ins>
+                <div className="grid" style={{marginTop:'1em'}}>
                     <label htmlFor="money">Money spent:
                         <input type="number" name="money" placeholder='Money spent' min="0" step="0.01"
                         onChange={handleMoneySpentChange}></input>
